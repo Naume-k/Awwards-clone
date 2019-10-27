@@ -1,0 +1,67 @@
+{%extends 'base.html'%}
+
+{% block content %}
+{{block.super}}
+<style>
+    .avatar {
+        vertical-align: middle;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+    }
+
+    .theprofile {
+        float: left;
+        width: calc(33.333% - 1rem);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 3rem;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="profile" style="margin-top: -7%; ">
+                <img src="{{my_profile.profile_photo.url}}" class="img-responsive avatar" >
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="imagecaption">
+                <h5>{{my_profile.user}}</h5>
+                <h5>{% autoescape on %}
+                    {{my_profile.bio| safe}}
+                    {% endautoescape %}</h5>
+            </div>
+        </div>
+        <div class="col-md-3">
+            {% if user.is_authenticated %}
+            <div class="dropdown" style="margin-top: 4%">
+                <a style=" color: black; " data-toggle="dropdown"> <button>Edit Profile</button> <img src="https://cdn1.iconfinder.com/data/icons/instagram-ui-colored/48/JD-01-512.png"
+                        width="60px;"></a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{%url 'edit'%}" style="color: black">Add profile</a>
+                    <a class="dropdown-item" href="{%url 'upload'%}" style="color: black; ">upload</a>
+                    <a class="dropdown-item" href="/accounts/password/change" style="color: black">Change Password</a>
+                    <a class="dropdown-item" href="/logout" style="color: black">Logout</a>
+                </div>
+            </div>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="/accounts/login" style="color: black;">Login</a>
+            </li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+
+    <div class="row">
+        {% for user in profi_images %}
+        <div class="col-md-4" style="width:50%;">
+            <img src="{{user.image.url}}" height="300" height="200" class="img-responsive" alt="Image" style="width:100%;" ><br><br>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
