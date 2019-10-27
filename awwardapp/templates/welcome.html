@@ -1,0 +1,110 @@
+{%extends 'base.html'%}
+{% load bootstrap4 %}
+
+{% block content %}
+{{block.super}}
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+
+    .zoom:hover {
+        -ms-transform: scale(1.0);
+        /* IE 9 */
+        -webkit-transform: scale(1.0);
+        /* Safari 3-8 */
+        transform: scale(1.5);
+    }
+
+   .text {
+  color: rgb(247, 242, 246);
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.card:hover .overlay {
+  opacity: 1;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
+  background-color: rgba(115, 131, 136, 0.493);
+}
+
+
+
+    .middle {
+        transition: .5s ease;
+        opacity: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        text-align: center;
+    }
+</style>
+
+<div style="background-image:url('https://st2.depositphotos.com/2285095/8933/i/950/depositphotos_89339314-stock-photo-coffee-cup-spiral-notebook-computer.jpg'); margin-top: -10%;">
+    <br>
+    <h5 style="color:#f10707">Site of the day {{date|date:"l d-F Y"}}</h5>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</div>
+
+<div class="container">
+
+    {% for project in all_projects %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card" style="width: 100%;  margin-left: 20%; margin-top: 20%;">
+
+                <img src="{{project.image.url}}" height="300" class="img-responsive zoom" alt="Image" style="border-bottom: 1px solid rgba(44, 41, 41, 0.089);">
+                <div class="overlay">
+                    <div class="text"> Rate</div>
+                </div>
+                <p><a href="{{project.project_url}}">{{project.project_name}}</a></p>
+                <p> Posted by: {{ project.user }}</p>
+                <p> {{project.pub_date|timesince}}</p>
+                <hr>
+                <div class="col-md-2">
+                    <a href="{%url 'comment' project.id%}" class="btn btn-default"><img src="https://cdn4.iconfinder.com/data/icons/vectory-basic/40/comment_2-512.png"
+                            style="width:30px;"></a>
+                </div>
+                {% for comments in project.comments_set.all %}
+                <h6>{{ project.user }}: {{comments.comment}} </h6>
+                {% endfor %}
+
+            </div>
+            <br><br>
+        </div>
+        <br><br>
+    </div>
+    {% endfor %}
+
+</div>
+</div>
+{% endblock %}
+<!-- <a href="{% url 'likes' id=image.id %}">like</a> -->
+
+
+<!-- <a href="{% url 'othersprofile' images.user.id %}" style="color: black"></a> -->
+<!-- {% for comments in images.comments_set.all %} -->
+<!-- <h6>{{ images.user }}: {{comments.comment}} </h6> -->
+<!-- {% endfor %} -->
+<!-- <a href="{%url 'comment' images.id%}" class="btn btn-default"></a><img src="https://cdn4.iconfinder.com/data/icons/vectory-basic/40/comment_2-512.png"
+                    style="width:30px;"></a> -->
