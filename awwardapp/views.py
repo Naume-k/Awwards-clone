@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from .models import Project,Profile,Comments
 from django.http  import HttpResponse,Http404
 from django.contrib.auth.decorators import login_required
-from .forms import NewProfileForm,NewProjectForm,commentForm
+from .forms import NewProfileForm,NewProjectForm,commentForm, RateForm
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.response import Response
@@ -14,9 +14,10 @@ def welcome(request):
     all_projects = Project.get_all_projects()
     awwardapp_users = Profile.get_all_awwardproj_users()
     current_user = request.user
+    rate_form = RateForm()
     # myprof = Profile.objects.filter(id = current_user.id).first()
     # mycomm = Comments.objects.filter(id = current_user.id).first()
-    return render(request, 'welcome.html', {"all_projects":all_projects, "awwardapp_users":awwardapp_users})
+    return render(request, 'welcome.html', {"all_projects":all_projects, "awwardapp_users":awwardapp_users, 'rate_form':rate_form})
 
 
 @login_required(login_url='/accounts/login/')
@@ -92,33 +93,20 @@ def add_comment(request, project_id):
     return render(request, 'comment_form.html', {"form": form, "project_id": project_id})
 
 
-def rate(request):
-    profile = User.objects.get(username=request.user)
-    return render(request,'rate.html',locals())
+def rating(request,rate_id):
 
-def view_rate(request,project_id):
-    user = User.objects.get(username=request.user)
-    project = Project.objects.get(pk=project_id)
-    rate = Rate.objects.filter(project_id=project_id)
-    print(rate)
-    return render(request,'project.html',locals())
-
-@login_required(login_url='/accounts/login')
-def rate_project(request,project_id):
-    project = Project.objects.get(pk=project_id)
-    profile = User.objects.get(username=request.user)
+    current_user = request.user
+    project = get_object_or_404(Project,pk=rate_id)
     if request.method == 'POST':
-        rateform = RateForm(request.POST, request.FILES)
-        print(rateform.errors)
-        if rateform.is_valid():
-            rating = rateform.save(commit=False)
-            rating.project = project
-            rating.user = request.user
-            rating.save()
-            return redirect('vote',project_id)
-    else:
-        rateform = RateForm()
-    return render(request,'rate.html',locals())
+        rate_form = RateForm(request.POST, request.FILES)
+        if rate_form.is_valid():
+            rate = rate_form.save(commit=False)
+            rate.project = project
+            rate.rater = current_user
+            rate.save()
+        return redirect('welcome')
+
+    return render(request, 'welcome.html')
 
 
 

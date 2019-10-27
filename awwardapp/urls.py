@@ -12,6 +12,7 @@ urlpatterns=[
     url(r'^comment/(\d+)/$', views.add_comment, name='comment'),
     url(r'^search/',views.search_users, name = 'searchs'),
     # url(r'^likes/(?P<id>\d+)',views.likes, name = 'like'),
+    url(r'^rate/(\d+)$',views.rating,name='rating'),
     url(r'^api/profile/$', views.ProfileList.as_view(), name = 'profile'),
     url(r'^api/project/$', views.ProjectList.as_view(), name = 'project')
 ]

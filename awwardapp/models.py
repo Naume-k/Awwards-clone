@@ -2,6 +2,7 @@ from django.db import models
 from tinymce.models import HTMLField
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+import numpy as np
 
 
 class Profile(models.Model):
@@ -78,6 +79,13 @@ class Project(models.Model):
         identity = Project.objects.get(pk=id)
         return identity
 
+    def average_rating(self):
+        all_ratings = list(map(lambda x: x.design_rating, self.rate_set.all()))
+        all_ratings = list(map(lambda x: x.content_rating, self.rate_set.all()))
+        all_ratings = list(map(lambda x: x.usability_rating, self.rate_set.all()))
+        return np.mean(all_ratings)
+
+
 
 class Comments(models.Model):
     comment = models.CharField(max_length = 250)
@@ -98,29 +106,20 @@ def __str__(self):
 
 
 class Rate(models.Model):
-    design = models.CharField(max_length=30)
-    usability = models.CharField(max_length=8)
-    creativity = models.CharField(max_length=8,blank=True,null=True)
-    average = models.FloatField(max_length=8)
-    user = models.ForeignKey(User,null = True)
-    project = models.ForeignKey(Project,related_name='rate',null=True)
-
-
-    def __str__(self):
-        return self.design
-
-    class Meta:
-        ordering = ['-id']
-
-    def save_rate(self):
-        self.save()
-
-    @classmethod
-    def get_rate(cls, profile):
-        rate = Rate.objects.filter(Profile__pk = profile)
-        return rate
-    
-    @classmethod
-    def get_all_rating(cls):
-        rating = Rate.objects.all()
-        return rating
+    RATING_CHOICES = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10,'10'),
+    )
+    project=models.ForeignKey(Project,on_delete=models.CASCADE)
+    rater=models.ForeignKey(User,on_delete=models.CASCADE)
+    design_rating = models.IntegerField(choices=RATING_CHOICES,null=True)
+    usability_rating=models.IntegerField(choices=RATING_CHOICES,null=True)
+    content_rating=models.IntegerField(choices=RATING_CHOICES,null=True)

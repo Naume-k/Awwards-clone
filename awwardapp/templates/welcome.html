@@ -18,51 +18,39 @@
         transform: scale(1.5);
     }
 
-   .text {
-  color: rgb(247, 242, 246);
-  font-size: 20px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-.card:hover .overlay {
-  opacity: 1;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  transition: .5s ease;
-  background-color: rgba(115, 131, 136, 0.493);
-}
-
-
-
-    .middle {
-        transition: .5s ease;
-        opacity: 0;
+    .text {
+        color: rgb(247, 242, 246);
+        font-size: 20px;
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
         text-align: center;
+    }
+
+    .card:hover .overlay {
+        opacity: 1;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        transition: .5s ease;
+        background-color: rgba(58, 57, 58, 0.493);
     }
 </style>
 
 <div style="background-image:url('https://st2.depositphotos.com/2285095/8933/i/950/depositphotos_89339314-stock-photo-coffee-cup-spiral-notebook-computer.jpg'); margin-top: -10%;">
     <br>
-    <h5 style="color:#f10707">Site of the day {{date|date:"l d-F Y"}}</h5>
+    <h5 style="color:#f10707">Site of the day {{pub_date|date:"l d-F Y"}}</h5>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </div>
 
@@ -71,15 +59,20 @@
     {% for project in all_projects %}
     <div class="row">
         <div class="col-md-4">
-            <div class="card" style="width: 100%;  margin-left: 20%; margin-top: 20%;">
+            <div class="card" style="width: 100%;   margin-top: 20%;">
 
                 <img src="{{project.image.url}}" height="300" class="img-responsive zoom" alt="Image" style="border-bottom: 1px solid rgba(44, 41, 41, 0.089);">
                 <div class="overlay">
-                    <div class="text"> Rate</div>
+                    <div class="text"> <a class="img-thumbnail" href="{{project.project_image}}" data-image-id="{{project.id}}"
+                            data-toggle="modal" data-target="#{{project.id}}">
+                            rate
+                        </a></div>
                 </div>
                 <p><a href="{{project.project_url}}">{{project.project_name}}</a></p>
                 <p> Posted by: {{ project.user }}</p>
                 <p> {{project.pub_date|timesince}}</p>
+
+                <p>average rating: {{project.average_rating}}</p>
                 <hr>
                 <div class="col-md-2">
                     <a href="{%url 'comment' project.id%}" class="btn btn-default"><img src="https://cdn4.iconfinder.com/data/icons/vectory-basic/40/comment_2-512.png"
@@ -94,17 +87,38 @@
         </div>
         <br><br>
     </div>
+
+
+
+    <div class="modal fade" id="{{project.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Rate
+
+                </div>
+                <div class="modal-body">
+
+                    <form action="{%url 'rating' project.id %}" method="post" enctype="multipart/form-data">
+                        {%csrf_token%}
+
+                        {% bootstrap_form rate_form %}
+                        <input type="submit" class="btn btn-success btn-lg" value="Post">
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     {% endfor %}
 
 </div>
 </div>
 {% endblock %}
-<!-- <a href="{% url 'likes' id=image.id %}">like</a> -->
-
-
-<!-- <a href="{% url 'othersprofile' images.user.id %}" style="color: black"></a> -->
-<!-- {% for comments in images.comments_set.all %} -->
-<!-- <h6>{{ images.user }}: {{comments.comment}} </h6> -->
-<!-- {% endfor %} -->
-<!-- <a href="{%url 'comment' images.id%}" class="btn btn-default"></a><img src="https://cdn4.iconfinder.com/data/icons/vectory-basic/40/comment_2-512.png"
-                    style="width:30px;"></a> -->

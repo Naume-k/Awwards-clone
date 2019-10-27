@@ -22,5 +22,5 @@ class commentForm(forms.ModelForm):
 
 class RateForm(forms.ModelForm):
     class Meta:
-        model =Rate
-        exclude= ['user','project']
+        model = Rate
+        exclude=['rater','project']
